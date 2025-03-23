@@ -2,28 +2,28 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button, Container, Row, Col, Dropdown } from "react-bootstrap";
 
-const Authorize = () => {
+const Graduate = () => {
   const [formData, setFormData] = useState({
     glastName: "",
     gfirstName: "",
     gmiddleName: "",
     gextensionName: "",
     ggender: "",
-    grelationship: "",
+    grelationship: "SELF",
     gbirthday: "",
     gcontactNumber: "",
-    slastName: "",
-    sfirstName: "",
-    smiddleName: "",
-    sextensionName: "",
-    sgender: "",
-    srelationship: "",
-    sbirthday: "",
-    scontactNumber: "",
-    gregion: "REGION V [Bicol Region]/050000000",
-    gprovince: "CAMARINES NORTE/051600000",
-    gcityMunicipality: "",
-    gpurok: "",
+    lastName: "",
+    firstName: "",
+    middleName: "",
+    extensionName: "",
+    gender: "",
+    relationship: "SELF",
+    birthday: "",
+    contactNumber: "",
+    region: "REGION V [Bicol Region]/050000000",
+    province: "CAMARINES NORTE/051600000",
+    cityMunicipality: "",
+    purok: "",
   });
 
   const municipalities = {
@@ -182,43 +182,16 @@ const Authorize = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value,
-      ...(name === "gcityMunicipality" && { gbarangay: "" }),
-    }));
+      ...(name === "cityMunicipality" && { barangay: "" }),
+    });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      console.log("Submitting form data:", formData); // Log form data
-
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxs5mqVw0Mp6QHDktbgahIrq5a7SN8eFHW8DdYpH3o/dev",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...formData, formType: "Authorize" }),
-        }
-      );
-
-      console.log("Response status:", response.status); // Log response status
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log("Success:", data); // Log success response
-      alert("Form submitted successfully!");
-    } catch (error) {
-      console.error("Error:", error); // Log error
-      alert("Failed to submit form. Please try again.");
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form Data Submitted:", formData);
   };
 
   const handleReset = () => {
@@ -228,21 +201,20 @@ const Authorize = () => {
       gmiddleName: "",
       gextensionName: "",
       ggender: "",
-      grelationship: "",
+      grelationship: "SELF",
       gbirthday: "",
       gcontactNumber: "",
-      slastName: "",
-      sfirstName: "",
-      smiddleName: "",
-      sextensionName: "",
-      sgender: "",
-      srelationship: "",
-      sbirthday: "",
-      scontactNumber: "",
-      gregion: "REGION V [Bicol Region]/050000000",
-      gprovince: "CAMARINES NORTE/051600000",
-      gcityMunicipality: "",
-      gpurok: "",
+      lastName: "",
+      firstName: "",
+      middleName: "",
+      extensionName: "",
+      gender: "",
+      relationship: "SELF",
+      birthday: "",
+      contactNumber: "",
+      region: "REGION V [Bicol Region]/050000000",
+      province: "CAMARINES NORTE/051600000",
+      cityMunicipality: "",
     });
   };
 
@@ -250,12 +222,12 @@ const Authorize = () => {
     <Container className="my-5">
       <Row>
         <Col>
-          <h2 className="text-center mb-4">Authorization Form</h2>
+          <h2 className="text-center mb-4">Change Client Form</h2>
           <Form
             onSubmit={handleSubmit}
             className="p-4 border rounded shadow-sm bg-light.bg-gradient"
           >
-            <h4 className="text-center mt-4">Guardian Information</h4>
+            <h4 className="text-center mt-4">Client Information</h4>
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
@@ -296,19 +268,18 @@ const Authorize = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Select
-                  name="gextensionName"
-                  value={formData.gextensionName}
-                  onChange={handleChange}
-                >
-                  <option value="N/A">N/A</option>
-                  <option value="Jr.">Jr.</option>
-                  <option value="Sr.">Sr.</option>
-                  <option value="II">II</option>
-                  <option value="III">III</option>
-                  <option value="IV">IV</option>
-                  <option value="V">V</option>
-                </Form.Select>
+                <Form.Group className="mb-3">
+                  <Form.Label>Extension Name</Form.Label>
+                  <Form.Select defaultValue="Choose...">
+                    <option>N/A</option>
+                    <option>Jr.</option>
+                    <option>Sr.</option>
+                    <option>II</option>
+                    <option>III</option>
+                    <option>IV</option>
+                    <option>V</option>
+                  </Form.Select>
+                </Form.Group>
               </Col>
             </Row>
             <Row>
@@ -340,19 +311,18 @@ const Authorize = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Select
-                  name="grelationship"
-                  value={formData.grelationship}
-                  onChange={handleChange}
-                >
-                  <option value="Parent">Parent</option>
-                  <option value="Cousin">Cousin</option>
-                  <option value="Auntie">Auntie</option>
-                  <option value="Uncle">Uncle</option>
-                  <option value="Concern Citizen">Concern Citizen</option>
-                  <option value="Sibling">Sibling</option>
-                  <option value="Other">Other</option>
-                </Form.Select>
+                <Form.Group className="mb-3">
+                  <Form.Label>Relationship to Benefeciary</Form.Label>
+                  <Form.Select defaultValue="Choose...">
+                    <option>Parent</option>
+                    <option>Cousin</option>
+                    <option>Auntie</option>
+                    <option>Uncle</option>
+                    <option>Concern Citizen</option>
+                    <option>Sibling</option>
+                    <option>Other</option>
+                  </Form.Select>
+                </Form.Group>
               </Col>
             </Row>
             <Row>
@@ -383,15 +353,15 @@ const Authorize = () => {
               </Col>
             </Row>
 
-            <h4 className="text-center mt-4">Student Information</h4>
+            <h4 className="text-center mt-4">New Client Information</h4>
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Last Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="slastName"
-                    value={formData.slastName}
+                    name="lastName"
+                    value={formData.lastName}
                     onChange={handleChange}
                     required
                   />
@@ -402,8 +372,8 @@ const Authorize = () => {
                   <Form.Label>First Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="sfirstName"
-                    value={formData.sfirstName}
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
                     required
                   />
@@ -417,26 +387,25 @@ const Authorize = () => {
                   <Form.Label>Middle Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="smiddleName"
-                    value={formData.smiddleName}
+                    name="middleName"
+                    value={formData.middleName}
                     onChange={handleChange}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Select
-                  name="sextensionName"
-                  value={formData.sextensionName}
-                  onChange={handleChange}
-                >
-                  <option value="N/A">N/A</option>
-                  <option value="Jr.">Jr.</option>
-                  <option value="Sr.">Sr.</option>
-                  <option value="II">II</option>
-                  <option value="III">III</option>
-                  <option value="IV">IV</option>
-                  <option value="V">V</option>
-                </Form.Select>
+                <Form.Group className="mb-3">
+                  <Form.Label>Extension Name</Form.Label>
+                  <Form.Select defaultValue="Choose...">
+                    <option>N/A</option>
+                    <option>Jr.</option>
+                    <option>Sr.</option>
+                    <option>II</option>
+                    <option>III</option>
+                    <option>IV</option>
+                    <option>V</option>
+                  </Form.Select>
+                </Form.Group>
               </Col>
             </Row>
             <Row>
@@ -448,9 +417,9 @@ const Authorize = () => {
                       inline
                       type="radio"
                       label="Male"
-                      name="sgender"
+                      name="gender"
                       value="Male"
-                      checked={formData.sgender === "Male"}
+                      checked={formData.gender === "Male"}
                       onChange={handleChange}
                       required
                     />
@@ -458,13 +427,25 @@ const Authorize = () => {
                       inline
                       type="radio"
                       label="Female"
-                      name="sgender"
+                      name="gender"
                       value="Female"
-                      checked={formData.sgender === "Female"}
+                      checked={formData.gender === "Female"}
                       onChange={handleChange}
                       required
                     />
                   </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Year Level</Form.Label>
+                  <Form.Select defaultValue="Choose...">
+                    <option>1st Year</option>
+                    <option>2nd Year</option>
+                    <option>3rd Year</option>
+                    <option>4th Year</option>
+                    <option>5th Year</option>
+                  </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
@@ -474,8 +455,8 @@ const Authorize = () => {
                   <Form.Label>Birthday</Form.Label>
                   <Form.Control
                     type="date"
-                    name="sbirthday"
-                    value={formData.sbirthday}
+                    name="birthday"
+                    value={formData.birthday}
                     onChange={handleChange}
                     required
                     pattern="\d{4}-\d{2}-\d{2}"
@@ -487,8 +468,8 @@ const Authorize = () => {
                   <Form.Label>Contact Number</Form.Label>
                   <Form.Control
                     type="text"
-                    name="scontactNumber"
-                    value={formData.scontactNumber}
+                    name="contactNumber"
+                    value={formData.contactNumber}
                     onChange={handleChange}
                     required
                   />
@@ -501,8 +482,8 @@ const Authorize = () => {
               <Form.Label>Region</Form.Label>
               <Form.Control
                 type="text"
-                name="gregion"
-                value={formData.gregion}
+                name="region"
+                value={formData.region}
                 disabled
               />
             </Form.Group>
@@ -511,8 +492,8 @@ const Authorize = () => {
               <Form.Label>Province</Form.Label>
               <Form.Control
                 type="text"
-                name="gprovince"
-                value={formData.gprovince}
+                name="province"
+                value={formData.province}
                 disabled
               />
             </Form.Group>
@@ -520,8 +501,8 @@ const Authorize = () => {
             <Form.Group className="mb-3">
               <Form.Label>City/Municipality</Form.Label>
               <Form.Select
-                name="gcityMunicipality"
-                value={formData.gcityMunicipality}
+                name="cityMunicipality"
+                value={formData.cityMunicipality}
                 onChange={handleChange}
                 required
               >
@@ -537,20 +518,20 @@ const Authorize = () => {
             <Form.Group className="mb-3">
               <Form.Label>Barangay</Form.Label>
               <Form.Select
-                name="gbarangay"
-                value={formData.gbarangay}
+                name="barangay"
+                value={formData.barangay}
                 onChange={handleChange}
                 required
                 disabled={
-                  !formData.gcityMunicipality ||
-                  !municipalities[formData.gcityMunicipality]
+                  !formData.cityMunicipality ||
+                  !municipalities[formData.cityMunicipality]
                 }
               >
                 <option value="">Select Barangay</option>
-                {municipalities[formData.gcityMunicipality]?.map(
-                  (gbarangay, index) => (
-                    <option key={index} value={gbarangay}>
-                      {gbarangay}
+                {municipalities[formData.cityMunicipality]?.map(
+                  (barangay, index) => (
+                    <option key={index} value={barangay}>
+                      {barangay}
                     </option>
                   )
                 )}
@@ -561,8 +542,8 @@ const Authorize = () => {
               <Form.Label>Purok/Street/Blk.</Form.Label>
               <Form.Control
                 type="text"
-                name="gpurok"
-                value={formData.gpurok}
+                name="purok"
+                value={formData.purok}
                 onChange={handleChange}
                 required
               />
@@ -587,4 +568,4 @@ const Authorize = () => {
   );
 };
 
-export default Authorize;
+export default Graduate;

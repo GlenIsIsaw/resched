@@ -181,29 +181,46 @@ const Personal = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
   
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbwUKr1iPSQEKXZBPyQc3HyGckjDSjhIdJBziMEBn9biTwzlAfO9Zj7cKkpCB9bGUafd/exec";
-  
-    const formDataObj = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      formDataObj.append(key, value);
-    });
+    const formData = {
+      formType: "Personal", // Identifies this as the Personal form
+      lastName,
+      firstName,
+      middleName,
+      gender,
+      birthday,
+      contactNumber,
+      region,
+      province,
+      cityMunicipality,
+      barangay,
+      purok,
+    };
   
     try {
-      const response = await fetch(scriptURL, {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbxwRba69VWQdevrEC-140OBP4pjjxLOB-eOeLzw7cc9KzhpPs1qjl0SPEC9bZYAPtVh/exec", {
         method: "POST",
-        body: formDataObj,
-        mode: "no-cors", // <== This prevents the CORS error
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
   
-      console.log("Form submitted successfully.");
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+  
+      alert("Personal form submitted successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
+      alert("Submission error: " + error.message);
     }
   };
+  
   
 
   const handleReset = () => {

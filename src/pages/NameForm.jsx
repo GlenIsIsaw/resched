@@ -70,7 +70,7 @@ const NameForm = () => {
               </Form.Select>
             </Form.Group>
             <div className="d-flex justify-content-end">
-              <Button type="submit" variant="primary">Submit</Button>
+              <Button type="submit" variant="success">Submit</Button>
             </div>
           </Form>
         </Col>
