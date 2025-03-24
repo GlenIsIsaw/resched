@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Funnel+Display:wght@300..800&family=Genos:ital,wght@0,100..900;1,100..900&family=Hubot+Sans:ital,wght@0,200..900;1,200..900&family=Lexend:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+h2, h4 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+
+  .label, .button {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  .custom-radio input[type="radio"] {
+    width: 18px;  /* Smaller size */
+    height: 18px;
+    border: 2px solid green; /* Green border */
+    appearance: none; /* Remove default styling */
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .custom-radio input[type="radio"]:checked {
+    background-color: green; /* Green inner circle */
+    border-color: green;
+  }
+  
+  .custom-radio input[type="radio"]::before {
+    content: "";
+    width: 8px;  /* Smaller inner circle */
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+  
+  .custom-radio input[type="radio"]:checked::before {
+    display: block;
+  }
+  
+  .custom-checkbox input[type="checkbox"] {
+    width: 18px;  /* Smaller size */
+    height: 18px;
+    border: 2px solid green; /* Green border */
+    appearance: none; /* Remove default styling */
+    border-radius: 4px; /* Square shape */
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .custom-checkbox input[type="checkbox"]:checked {
+    background-color: green; /* Green background */
+    border-color: green;
+  }
+  
+  .custom-checkbox input[type="checkbox"]::before {
+    content: "✔"; /* Checkmark */
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+  
+  .custom-checkbox input[type="checkbox"]:checked::before {
+    display: block;
+  }
+  

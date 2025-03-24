@@ -1,30 +1,61 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Form, Button, Container, Row, Col, Dropdown } from "react-bootstrap";
+import { useNavigate, Navigate } from "react-router-dom";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
+import "../App.css";
 
 const Graduate = () => {
+
+
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false); // Track if form is submitted
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("formCompleted")) {
+      navigate("/");
+    }
+    
+    return () => {
+      localStorage.removeItem("formCompleted");
+    };
+  }, [navigate]);
+
   const [formData, setFormData] = useState({
-    glastName: "",
-    gfirstName: "",
-    gmiddleName: "",
-    gextensionName: "",
-    ggender: "",
-    grelationship: "SELF",
-    gbirthday: "",
-    gcontactNumber: "",
-    lastName: "",
-    firstName: "",
-    middleName: "",
-    extensionName: "",
-    gender: "",
-    relationship: "SELF",
-    birthday: "",
-    contactNumber: "",
-    region: "REGION V [Bicol Region]/050000000",
-    province: "CAMARINES NORTE/051600000",
-    cityMunicipality: "",
-    purok: "",
+    grlastName: "",
+    grfirstName: "",
+    grmiddleName: "",
+    grextensionName: "",
+    grgender: "",
+    grrelationship: "",
+    grbirthday: "",
+    grcontactNumber: "",
+    nlastName: "",
+    nfirstName: "",
+    nmiddleName: "",
+    nextensionName: "",
+    ngender: "",
+    nrelationship: "SELF",
+    nbirthday: "",
+    ncontactNumber: "",
+    nregion: "REGION V [Bicol Region]/050000000",
+    nprovince: "CAMARINES NORTE/051600000",
+    ncityMunicipality: "",
+    npurok: "",
   });
+
+  const [showModal, setShowModal] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const municipalities = {
     "BASUD/051601000": [
@@ -182,39 +213,100 @@ const Graduate = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-      ...(name === "cityMunicipality" && { barangay: "" }),
+    setFormData((prevData) => {
+      const updatedFormData = {
+        ...prevData,
+        [name]: value,
+        ...(name === "ncityMunicipality" && { nbarangay: "" }),
+      };
+
+      // Check if all required fields are filled
+      const requiredFields = [
+        "grlastName",
+        "grfirstName",
+        "grgender",
+        "grrelationship",
+        "grbirthday",
+        "grcontactNumber",
+        "nlastName",
+        "nfirstName",
+        "ngender",
+        "nbirthday",
+        "ncontactNumber",
+        "ncityMunicipality",
+        "nbarangay",
+        "npurok",
+      ];
+
+      const isComplete = requiredFields.every((field) => {
+        const val = updatedFormData[field];
+        return val?.trim() !== "";
+      });
+
+      setIsFormValid(isComplete); // Update state
+      return updatedFormData;
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleReview = () => {
+    if (!isSubmitted) {
+      setShowModal(true); // Only show Review Modal if form is not submitted
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
+    setIsSubmitting(true);
+
+    const scriptURL =
+      "https://script.google.com/macros/s/AKfycbwz7KPkO_YA7R_rTErkQ6kcOZwa5gc8zbz990QXzRjKQO-lRZ8ny-EMXj2nmHn2OIwE/exec";
+
+    const formDataObj = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataObj.append(key, value);
+    });
+
+    try {
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        body: formDataObj,
+        // <== This prevents the CORS error
+      });
+
+      console.log("Form submitted successfully.");
+      setShowSuccessModal(true); // Show success modal
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsSubmitting(false); // Stop submission
+    }
+  };
+
+  const handleSuccessClose = () => {
+    setShowSuccessModal(false);
+    navigate("/"); // Redirect to NameForm page
   };
 
   const handleReset = () => {
     setFormData({
-      glastName: "",
-      gfirstName: "",
-      gmiddleName: "",
-      gextensionName: "",
-      ggender: "",
-      grelationship: "SELF",
-      gbirthday: "",
-      gcontactNumber: "",
-      lastName: "",
-      firstName: "",
-      middleName: "",
-      extensionName: "",
-      gender: "",
-      relationship: "SELF",
-      birthday: "",
-      contactNumber: "",
-      region: "REGION V [Bicol Region]/050000000",
-      province: "CAMARINES NORTE/051600000",
-      cityMunicipality: "",
+      grlastName: "",
+      grfirstName: "",
+      grmiddleName: "",
+      grextensionName: "",
+      grgender: "",
+      grrelationship: "",
+      grbirthday: "",
+      grcontactNumber: "",
+      nlastName: "",
+      nfirstName: "",
+      nmiddleName: "",
+      nextensionName: "",
+      ngender: "",
+      nbirthday: "",
+      ncontactNumber: "",
+      nregion: "REGION V [Bicol Region]/050000000",
+      nprovince: "CAMARINES NORTE/051600000",
+      ncityMunicipality: "",
     });
   };
 
@@ -222,32 +314,37 @@ const Graduate = () => {
     <Container className="my-5">
       <Row>
         <Col>
-          <h2 className="text-center mb-4">Change Client Form</h2>
+          <h2 className="text-center mb-4 fw-bold text-uppercase">
+            Graduate 2023 - 2024 Form
+          </h2>
           <Form
             onSubmit={handleSubmit}
-            className="p-4 border rounded shadow-sm bg-light.bg-gradient"
+            className="p-4 border rounded shadow-sm bg-light.bg-gradient border-success border-2"
           >
-            <h4 className="text-center mt-4">Client Information</h4>
+            <h4 className="text-center my-4">Graduate Client Information</h4>
+            <hr />
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Last Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="glastName"
-                    value={formData.glastName}
+                    name="grlastName"
+                    className="border-3 border-success"
+                    value={formData.grlastName}
                     onChange={handleChange}
                     required
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>First Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="gfirstName"
-                    value={formData.gfirstName}
+                    name="grfirstName"
+                    className="border-3 border-success"
+                    value={formData.grfirstName}
                     onChange={handleChange}
                     required
                   />
@@ -257,43 +354,50 @@ const Graduate = () => {
 
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Middle Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="gmiddleName"
-                    value={formData.gmiddleName}
+                    name="grmiddleName"
+                    className="border-3 border-success"
+                    value={formData.grmiddleName}
                     onChange={handleChange}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Extension Name</Form.Label>
-                  <Form.Select defaultValue="Choose...">
-                    <option>N/A</option>
-                    <option>Jr.</option>
-                    <option>Sr.</option>
-                    <option>II</option>
-                    <option>III</option>
-                    <option>IV</option>
-                    <option>V</option>
+                  <Form.Select
+                    name="grextensionName"
+                    className="border-3 border-success"
+                    value={formData.grextensionName} // ✅ FIXED: Use the correct key
+                    onChange={handleChange}
+                  >
+                    <option value="">N/A</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Gender</Form.Label>
                   <div>
                     <Form.Check
                       inline
                       type="radio"
                       label="Male"
-                      name="ggender"
+                      name="grgender"
                       value="Male"
-                      checked={formData.ggender === "Male"}
+                      className="custom-radio"
+                      checked={formData.grgender === "Male"}
                       onChange={handleChange}
                       required
                     />
@@ -301,9 +405,10 @@ const Graduate = () => {
                       inline
                       type="radio"
                       label="Female"
-                      name="ggender"
+                      name="grgender"
                       value="Female"
-                      checked={formData.ggender === "Female"}
+                      className="custom-radio"
+                      checked={formData.grgender === "Female"}
                       onChange={handleChange}
                       required
                     />
@@ -311,9 +416,15 @@ const Graduate = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Relationship to Benefeciary</Form.Label>
-                  <Form.Select defaultValue="Choose...">
+                  <Form.Select
+                    name="grrelationship"
+                    className="border-3 border-success"
+                    value={formData.grrelationship} // ✅ FIXED: Use the correct key
+                    onChange={handleChange}
+                  >
+                    <option>N/A</option>
                     <option>Parent</option>
                     <option>Cousin</option>
                     <option>Auntie</option>
@@ -327,12 +438,13 @@ const Graduate = () => {
             </Row>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Birthday</Form.Label>
                   <Form.Control
                     type="date"
-                    name="gbirthday"
-                    value={formData.gbirthday}
+                    name="grbirthday"
+                    className="border-3 border-success"
+                    value={formData.grbirthday}
                     onChange={handleChange}
                     required
                     pattern="\d{4}-\d{2}-\d{2}"
@@ -340,12 +452,13 @@ const Graduate = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Contact Number</Form.Label>
                   <Form.Control
                     type="text"
-                    name="gcontactNumber"
-                    value={formData.gcontactNumber}
+                    name="grcontactNumber"
+                    className="border-3 border-success"
+                    value={formData.grcontactNumber}
                     onChange={handleChange}
                     required
                   />
@@ -353,27 +466,30 @@ const Graduate = () => {
               </Col>
             </Row>
 
-            <h4 className="text-center mt-4">New Client Information</h4>
+            <h4 className="text-center my-4">New Client Information</h4>
+            <hr />
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Last Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="lastName"
-                    value={formData.lastName}
+                    name="nlastName"
+                    className="border-3 border-success"
+                    value={formData.nlastName}
                     onChange={handleChange}
                     required
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>First Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    name="nfirstName"
+                    className="border-3 border-success"
+                    value={formData.nfirstName}
                     onChange={handleChange}
                     required
                   />
@@ -383,43 +499,50 @@ const Graduate = () => {
 
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Middle Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="middleName"
-                    value={formData.middleName}
+                    name="nmiddleName"
+                    className="border-3 border-success"
+                    value={formData.nmiddleName}
                     onChange={handleChange}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Extension Name</Form.Label>
-                  <Form.Select defaultValue="Choose...">
-                    <option>N/A</option>
-                    <option>Jr.</option>
-                    <option>Sr.</option>
-                    <option>II</option>
-                    <option>III</option>
-                    <option>IV</option>
-                    <option>V</option>
+                  <Form.Select
+                    name="nextensionName"
+                    className="border-3 border-success"
+                    value={formData.nextensionName} // ✅ FIXED: Use the correct key
+                    onChange={handleChange}
+                  >
+                    <option value="">N/A</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Gender</Form.Label>
                   <div>
                     <Form.Check
                       inline
                       type="radio"
                       label="Male"
-                      name="gender"
+                      name="ngender"
                       value="Male"
-                      checked={formData.gender === "Male"}
+                      className="custom-radio"
+                      checked={formData.ngender === "Male"}
                       onChange={handleChange}
                       required
                     />
@@ -427,9 +550,10 @@ const Graduate = () => {
                       inline
                       type="radio"
                       label="Female"
-                      name="gender"
+                      name="ngender"
                       value="Female"
-                      checked={formData.gender === "Female"}
+                      className="custom-radio"
+                      checked={formData.ngender === "Female"}
                       onChange={handleChange}
                       required
                     />
@@ -437,9 +561,12 @@ const Graduate = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Current Year Level</Form.Label>
-                  <Form.Select defaultValue="Choose...">
+                  <Form.Select
+                    defaultValue="Choose..."
+                    className="border-3 border-success"
+                  >
                     <option>1st Year</option>
                     <option>2nd Year</option>
                     <option>3rd Year</option>
@@ -451,12 +578,13 @@ const Graduate = () => {
             </Row>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Birthday</Form.Label>
                   <Form.Control
                     type="date"
-                    name="birthday"
-                    value={formData.birthday}
+                    name="nbirthday"
+                    className="border-3 border-success"
+                    value={formData.nbirthday}
                     onChange={handleChange}
                     required
                     pattern="\d{4}-\d{2}-\d{2}"
@@ -464,12 +592,13 @@ const Graduate = () => {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 label">
                   <Form.Label>Contact Number</Form.Label>
                   <Form.Control
                     type="text"
-                    name="contactNumber"
-                    value={formData.contactNumber}
+                    name="ncontactNumber"
+                    className="border-3 border-success"
+                    value={formData.ncontactNumber}
                     onChange={handleChange}
                     required
                   />
@@ -477,32 +606,34 @@ const Graduate = () => {
               </Col>
             </Row>
 
-            <h4 className="text-center mt-4">Address</h4>
-            <Form.Group className="mb-3">
+            <h4 className="text-center mt-4">New Client Address</h4>
+            <hr />
+            <Form.Group className="mb-3 label">
               <Form.Label>Region</Form.Label>
               <Form.Control
                 type="text"
-                name="region"
-                value={formData.region}
+                name="nregion"
+                value={formData.nregion}
                 disabled
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 label">
               <Form.Label>Province</Form.Label>
               <Form.Control
                 type="text"
-                name="province"
-                value={formData.province}
+                name="nprovince"
+                value={formData.nprovince}
                 disabled
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 label">
               <Form.Label>City/Municipality</Form.Label>
               <Form.Select
-                name="cityMunicipality"
-                value={formData.cityMunicipality}
+                name="ncityMunicipality"
+                className="border-3 border-success"
+                value={formData.ncityMunicipality}
                 onChange={handleChange}
                 required
               >
@@ -515,20 +646,21 @@ const Graduate = () => {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 label">
               <Form.Label>Barangay</Form.Label>
               <Form.Select
-                name="barangay"
-                value={formData.barangay}
+                name="nbarangay"
+                className="border-3 border-success"
+                value={formData.nbarangay}
                 onChange={handleChange}
                 required
                 disabled={
-                  !formData.cityMunicipality ||
-                  !municipalities[formData.cityMunicipality]
+                  !formData.ncityMunicipality ||
+                  !municipalities[formData.ncityMunicipality]
                 }
               >
                 <option value="">Select Barangay</option>
-                {municipalities[formData.cityMunicipality]?.map(
+                {municipalities[formData.ncityMunicipality]?.map(
                   (barangay, index) => (
                     <option key={index} value={barangay}>
                       {barangay}
@@ -538,32 +670,199 @@ const Graduate = () => {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 label">
               <Form.Label>Purok/Street/Blk.</Form.Label>
               <Form.Control
                 type="text"
-                name="purok"
-                value={formData.purok}
+                className="border-3 border-success"
+                name="npurok"
+                value={formData.npurok}
                 onChange={handleChange}
                 required
               />
             </Form.Group>
 
-            <div className="d-flex justify-content-end mt-4">
+            <div className="d-flex mb-3 label my-4">
+              <Button
+                variant="danger"
+                onClick={() => navigate("/formopt")}
+                className="me-auto p-2"
+              >
+                Back
+              </Button>
+
               <Button
                 variant="secondary"
-                className="me-2"
+                className="p-2 me-2"
                 onClick={handleReset}
               >
                 Reset
               </Button>
-              <Button type="submit" variant="success">
-                Submit
+
+              <Button
+                variant="success"
+                className="p-2"
+                onClick={handleReview}
+                disabled={!isFormValid || isSubmitted} // Disable when the form is incomplete
+              >
+                Review
               </Button>
             </div>
           </Form>
         </Col>
       </Row>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Review Your Information</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-center text-uppercase fw-bold">
+            Graduate Client Infromation
+          </p>
+          <hr className="mx-2" />
+          <p>
+            <strong>Last Name:</strong> {formData.grlastName}
+          </p>
+          <p>
+            <strong>First Name:</strong> {formData.grfirstName}
+          </p>
+          <p>
+            <strong>Middle Name:</strong> {formData.grmiddleName}
+          </p>
+          <p>
+            <strong>Extension Name:</strong> {formData.grextensionName}
+          </p>
+          <p>
+            <strong>Birthday (YYYY-MM-DD):</strong> {formData.grbirthday}
+          </p>
+          <p>
+            <strong>Updated Contact Number:</strong> {formData.grcontactNumber}
+          </p>
+          <p>
+            <strong>Gender:</strong> {formData.grgender}
+          </p>
+          <p>
+            <strong>Relationship to Beneficary:</strong>{" "}
+            {formData.grrelationship}
+          </p>
+          <br />
+          <p className="text-center text-uppercase fw-bold">
+            New Client Infromation
+          </p>
+          <hr className="mx-2" />
+          <p>
+            <strong>Last Name:</strong> {formData.nlastName}
+          </p>
+          <p>
+            <strong>First Name:</strong> {formData.nfirstName}
+          </p>
+          <p>
+            <strong>Middle Name:</strong> {formData.nmiddleName}
+          </p>
+          <p>
+            <strong>Extension Name:</strong> {formData.nextensionName}
+          </p>
+          <p>
+            <strong>Birthday (YYYY-MM-DD):</strong> {formData.nbirthday}
+          </p>
+          <p>
+            <strong>Updated Contact Number:</strong> {formData.ncontactNumber}
+          </p>
+          <p>
+            <strong>Gender:</strong> {formData.ngender}
+          </p>
+          <br />
+          <p className="text-center text-uppercase fw-bold">
+            New Client Address
+          </p>
+          <hr className="mx-2" />
+          <p>
+            <strong>Region:</strong> {formData.nregion}
+          </p>
+          <p>
+            <strong>Province:</strong> {formData.nprovince}
+          </p>
+          <p>
+            <strong>City/Municipality:</strong> {formData.ncityMunicipality}
+          </p>
+          <p>
+            <strong>Barangay:</strong> {formData.nbarangay}
+          </p>
+          <p>
+            <strong>Purok/Street/Blk:</strong> {formData.npurok}
+          </p>
+
+          <div className="d-flex justify-content-center mt-5">
+            <Form.Group controlId="confirmCheckbox">
+              <Form.Check
+                type="checkbox"
+                className="custom-checkbox"
+                label="I confirm that all of the information that I input are all correct."
+                checked={isConfirmed}
+                onChange={(e) => setIsConfirmed(e.target.checked)}
+              />
+            </Form.Group>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Edit
+          </Button>
+          <Button
+            variant="success"
+            onClick={handleSubmit}
+            disabled={!isConfirmed || isSubmitting} // Disable during submission
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                <span className="ms-2">Submitting...</span>
+              </>
+            ) : (
+              "Submit"
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showSuccessModal}
+        onHide={handleSuccessClose}
+        centered
+        backdrop="static" // Prevent closing by clicking outside
+        keyboard={false} // Prevent closing by pressing ESC
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Submission Successful</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <div className="mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              fill="green"
+              className="bi bi-check-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </svg>
+          </div>
+          <p>Your form has been successfully submitted!</p>
+        </Modal.Body>
+        <Modal.Footer className="justify-content-center">
+          <Button variant="success" onClick={handleSuccessClose}>
+            Proceed
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

@@ -8,11 +8,13 @@ const App = () => {
   return (
     <Router>
       <Routes>
-      <Route path="/FormOpt" element={<FormOpt />} />
+
+      <Route path="/" element={<NameForm />} />
+      <Route path="/formopt" element={<FormOpt />} />
       <Route path="/Personal" element={<Personal />} />
       <Route path="/Authorize" element={<Authorize />} />
       <Route path="/Graduate" element={<Graduate />} />
-        <Route path="/" element={<NameForm />} />
+      
       </Routes>
     </Router>
   );

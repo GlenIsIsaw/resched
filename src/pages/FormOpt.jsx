@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -9,10 +10,25 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "react-bootstrap";
+import "../App.css";
 
 const FormOpt = () => {
+
   const [selectedOption, setSelectedOption] = useState("");
   const [language, setLanguage] = useState("tagalog");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If no session token, redirect to NameForm
+    if (!localStorage.getItem("formCompleted")) {
+      navigate("/");
+    }
+  
+    // Remove session token when user leaves this page
+    return () => {
+      localStorage.removeItem("formCompleted");
+    };
+  }, [navigate]);
 
   const handleChange = (e) => {
     setSelectedOption(e.target.value);
@@ -20,7 +36,19 @@ const FormOpt = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Napiling Opsyon:", selectedOption);
+    // console.log("Napiling Opsyon:", selectedOption);
+
+    if (selectedOption === "Personal Reason") {
+      navigate("/personal"); // Redirect to Personal.jsx
+    } else if (selectedOption === "Authorize Representative") {
+      navigate("/authorize"); // Redirect to Authorize page
+    } else if (selectedOption === "Graduate") {
+      navigate("/Graduate"); // Redirect to graduate page
+    } else if (selectedOption === "Missed Schedule") {
+      navigate("/personal"); // Redirect to personal page
+    } else if (selectedOption === "Other") {
+      navigate("/personal"); // Redirect to personal page
+    }
   };
 
   const toggleLanguage = () => {
@@ -46,14 +74,14 @@ const FormOpt = () => {
               </ToggleButton>
             </ToggleButtonGroup>
           </div>
-          <h2 className="text-center">
+          <h2 className="text-center fw-bold text-uppercase">
             {language === "tagalog"
               ? "Dahilan ng Kahilingan"
               : "Reason for Request"}
           </h2>
           <Form
             onSubmit={handleSubmit}
-            className="p-4 border rounded shadow-sm bg-grey"
+            className="p-4 border rounded shadow-sm bg-grey label border-success border-2"
           >
             <Form.Group className="mb-3">
               <Form.Label>
@@ -63,7 +91,7 @@ const FormOpt = () => {
               </Form.Label>
               <div>
                 <Form.Check
-                  className="my-3"
+                  className="my-3 custom-radio"
                   style={{ borderWidth: "3px" }}
                   type="radio"
                   label={
@@ -77,7 +105,7 @@ const FormOpt = () => {
                   onChange={handleChange}
                 />
                 <Form.Check
-                  className="my-3"
+                  className="my-3 custom-radio"
                   style={{ borderWidth: "3px" }}
                   type="radio"
                   label={
@@ -91,12 +119,12 @@ const FormOpt = () => {
                   onChange={handleChange}
                 />
                 <Form.Check
-                  className="my-3"
+                  className="my-3 custom-radio"
                   style={{ borderWidth: "3px" }}
                   type="radio"
                   label={
                     language === "tagalog"
-                      ? "Nakapagtapos na ako, at handa akong ibigay ang aking puwesto sa aking kapatid, pinsan, o isang kakilala ko."
+                      ? "Nakapagtapos na ako sa kolehiyo, at handa akong ibigay ang aking puwesto sa aking kapatid, pinsan, o isang kakilala ko."
                       : "I have already graduated, and I am willing to give my slot to my sibling, cousin, or someone I know."
                   }
                   name="options"
@@ -105,7 +133,7 @@ const FormOpt = () => {
                   onChange={handleChange}
                 />
                 <Form.Check
-                  className="my-3"
+                  className="my-3 custom-radio"
                   style={{ borderWidth: "3px" }}
                   type="radio"
                   label={
@@ -119,7 +147,7 @@ const FormOpt = () => {
                   onChange={handleChange}
                 />
                 <Form.Check
-                  className="my-3"
+                  className="my-3 custom-radio"
                   style={{ borderWidth: "3px" }}
                   type="radio"
                   label={
@@ -133,7 +161,11 @@ const FormOpt = () => {
               </div>
             </Form.Group>
             <div className="d-flex justify-content-end">
-              <Button type="submit" variant="success">
+              <Button
+                type="submit"
+                variant="success"
+                disabled={!selectedOption}
+              >
                 {language === "tagalog" ? "Isumite" : "Submit"}
               </Button>
             </div>
