@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -19,15 +19,13 @@ const Authorize = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false); // Track if form is submitted
   const navigate = useNavigate();
-
+  
   useEffect(() => {
-    if (!localStorage.getItem("formCompleted")) {
-      navigate("/");
+    const hasAccess = localStorage.getItem("formAccess");
+
+    if (!hasAccess) {
+      navigate("/nameform"); // 🚨 Redirect if accessed manually
     }
-    
-    return () => {
-      localStorage.removeItem("formCompleted");
-    };
   }, [navigate]);
 
   const [formData, setFormData] = useState({

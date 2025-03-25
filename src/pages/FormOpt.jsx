@@ -18,38 +18,40 @@ const FormOpt = () => {
   const [language, setLanguage] = useState("tagalog");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // If no session token, redirect to NameForm
-    if (!localStorage.getItem("formCompleted")) {
-      navigate("/");
-    }
+// Update the access check
+// Remove this entire useEffect from FormOpt
+// The PrivateRoute is now handling the access control
+useEffect(() => {
+  const hasAccess = localStorage.getItem("formAccess") === "true";
+  if (!hasAccess) {
+    navigate("/", { replace: true });
+  }
+}, [navigate]);
   
-    // Remove session token when user leaves this page
-    return () => {
-      localStorage.removeItem("formCompleted");
-    };
-  }, [navigate]);
-
   const handleChange = (e) => {
     setSelectedOption(e.target.value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log("Napiling Opsyon:", selectedOption);
-
+  
+    // ✅ Allow them to proceed and THEN remove session token
+    console.log("❌ Removing session token...");
+    localStorage.removeItem("formCompleted");
+  
     if (selectedOption === "Personal Reason") {
-      navigate("/personal"); // Redirect to Personal.jsx
+      navigate("/personal");
     } else if (selectedOption === "Authorize Representative") {
-      navigate("/authorize"); // Redirect to Authorize page
+      navigate("/authorize");
     } else if (selectedOption === "Graduate") {
-      navigate("/Graduate"); // Redirect to graduate page
+      navigate("/graduate");
     } else if (selectedOption === "Missed Schedule") {
-      navigate("/personal"); // Redirect to personal page
+      navigate("/personal");
     } else if (selectedOption === "Other") {
-      navigate("/personal"); // Redirect to personal page
+      navigate("/personal");
     }
   };
+  
 
   const toggleLanguage = () => {
     setLanguage(language === "tagalog" ? "english" : "tagalog");
